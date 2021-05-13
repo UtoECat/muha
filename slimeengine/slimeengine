@@ -1,0 +1,29 @@
+#include <iostream>
+
+/*
+-----------------------------------------
+*********** SLIME GAME ENGINE ***********
+************ MAIN HEADERFILE ************
+** VERSION 0.0 *** LICENSE GNU GPL 3.0 **
+**** By UtoECat *************************
+** MY SOCIAL : https://vk.com/utoecat
+**           : https://www.youtube.com/
+channel/UCNFNQFuXvCjmTdr2QfSAsvQ
+**           : https://github.com/UtoECat
+*****************************************
+-----------------------------------------
+*/
+
+#ifndef __SLIMEENGINE_INCLUDE_STATE__
+#define __SLIMEENGINE_INCLUDE_STATE__
+
+#include <core.h>
+#include <draw.h>
+
+// DEFINE ALL SLIMEENGINE IMPORTANT HEADERS 
+
+
+
+#endif 
+
+
