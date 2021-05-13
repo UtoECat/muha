@@ -1,5 +1,7 @@
-# muha
+# Muha
 GNU MUHA PROJECT. Just a simple game about a flies :D
+# Screenshots and video
+
 # platforms
 Linux... And just linux... Windows officially not supported
 # Make
