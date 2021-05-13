@@ -11,8 +11,8 @@ for make this just open a directory with clonned repository and run *make*. Also
 # Run
 For run it, open terminal in dir with clonned repository and maked runnable file, and write *./run*. Running from other catalogs probably can make some problems.
 # For teapots :D
-just do this commands :
-$makedir h
+just do this commands : \n
+$makedir h \n
 $cd h
 $git clone https://github.com/UtoECat/muha
 $cd muha
