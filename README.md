@@ -2,6 +2,8 @@
 GNU MUHA PROJECT. Just a simple game about a flies :D
 # Screenshots and video
 
+<iframe width="1588" height="731" src="https://www.youtube.com/embed/me0ocE_pRj0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 # platforms
 Linux... And just linux... Windows officially not supported
 # Make
