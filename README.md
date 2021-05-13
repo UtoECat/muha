@@ -23,4 +23,4 @@ and for run :<br/>
 # Score
 Your score is saved in dir with ./run file. It name is *score.cfg*. For down your scores to ZERO just clean all information on it.
 # What is slimeengine?
-It's a my second project, that i will make soon... maybe... But now it's unusable at all! DON'T CLONE IT NOW! I will delete it, when all will be done.
+It's a my second project, that i will make soon... maybe... But now it's unusable at all! DON'T USE IT ANYWHERE NOW! I will delete it, when all will be done.
