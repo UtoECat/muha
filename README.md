@@ -2,7 +2,7 @@
 GNU MUHA PROJECT. Just a simple game about a flies :D
 # Screenshots and video
 
-[![Alt text](https://img.youtube.com/vi/VID/0.jpg)](https://www.youtube.com/watch?v=me0ocE_pRj0)
+[![Click to show](https://img.youtube.com/vi/me0ocE_pRj0/0.jpg)](https://www.youtube.com/watch?v=me0ocE_pRj0)
 
 # platforms
 Linux... And just linux... Windows officially not supported
