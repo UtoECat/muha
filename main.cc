@@ -1,15 +1,14 @@
 #include <iostream> //iostream like cin and cout
 #include <fstream>//saveload
 #include <thread>   //maybe i will make it later...
-#include <slimeengine/slimeengine> //SGE!
 #include <string>    //STRINGS
 #include <random>    //RANDOM GENERATOR
 #include <sstream>   //FOR CONVVERTING
 #include <gst/gst.h> //AUDIOLIB
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"//IMAGE LOAD!
 #include <limits.h>
 #include <unistd.h>
+#include "defines.h"
+#include <hardcode.h>
 
 /*
 -----------------------------------------
@@ -30,123 +29,27 @@ const float muhasize = 50;
 const float size = 360 - muhasize;
 #define arrsize 100
 
-//#if _FUCKIN_COSTYL_
-int *global_argc;
-char **global_argv;
-//#endif _FUCKIN_COSTYL_
-
-std::string getpath()
-{
-  char result[ PATH_MAX ];
-  ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
-  std::string str ( result, (count > 0) ? count : 0 );
-    return str.substr(0,str.find_last_of("/"));
-}
-
-std::string get_patch (std::string fileend)
-{
-//YOU PROBABLY WILL KILL ME FOR THIS
-static std::string prfx = "file://";
-static std::string argv_z_str = getpath();
-std::string s =prfx + argv_z_str +
-fileend;
-std::cout << s <<std::endl;
-return s;
-}
-
 static int score;
-static int highscore; //TODO: MAKE IT SAVEABLE!
+static int highscore;
 
-unsigned int *textures;//textures array;
-int TEXCOUNT= 0; // count of textures
-
-
-struct muha //muha
-{
-float x;
-float y;
-float speedx;
-float speedy;
-int ai;
-};
-
-muha* muhaarr = new muha[arrsize + 1];//muha's array :D
+//muha* muhaarr = new muha[arrsize + 1];//muha's array :D
+muha* muhaarr;
 int fps = 0; //FPS
 std::string fpsstr;//FPS
 
-struct fire 
-{
-int x;
-int y;
-int power = 100;
-int frame = random()%54;
-};
-
-
-#define firearrsize 50
-fire *firearr = new fire[firearrsize];
-int firecount = 0;
+extern const int firearrsize;
+extern fire *firearr;
+extern int firecount;
 
 std::ofstream fout;
 std::ifstream fin;
 
-void delfire (int k)
-{
-//std::cout << "DELETING " << k <<" : "; DEBUG
-if (k == firearrsize - 1) {firecount--; std::cout <<std::endl; return;};
-for (int i = k; i < firearrsize - 1; ++i) firearr[i] = firearr[i + 1];
-//std::cout <<"BOTTOM"<<std::endl; FOR DEBUG :D
-firecount--;
-}
-
-
-void addfire (fire a)
-{
-//std::cout << "ADDING WHILE "<< firecount <<std::endl; DEBUG  TODO: MAKE DEBUG COMPILER KEY!
-if (firecount >= firearrsize) delfire(0);
-firearr[firecount] = a;
-firecount++;
-}
-
 GstElement *bin; // GSTREAMER. MAIN MUSIC STREAM
-GstBus *bus;
-GstMessage *msg;
-
 GstElement *sbin; // GSTREAMER. SOUND STREAM
-GstBus *sbus;
-GstMessage *smsg;
+GstBus *bus;
 
-static void error_cb (GstBus *bus, GstMessage *msg, gpointer data) {
-  GError *err;gchar *debug_info;
-  gst_message_parse_error (msg, &err, &debug_info);
-  g_printerr ("Error in element %s: %s\n", GST_OBJECT_NAME (msg->src), err->message);
-  g_printerr ("INFORMATION: %s\n", debug_info ? debug_info : "none");
-  g_clear_error (&err);
-  g_free (debug_info);
-  gst_element_set_state (bin, GST_STATE_READY);
-}
-
-static void eos_cb (GstBus *bus, GstMessage *msg, gpointer data) {
-  //g_print ("Error. End-Of-Stream reached.\n");
-  gst_element_set_state (bin, GST_STATE_READY);
-}
-
-void about_to_finish_han (GstElement *playbin,
-gpointer udata) // Я ХАН ЁПТА :DD
-{
-g_object_set (playbin, "uri",
-get_patch("/muhi.mp3").c_str(), NULL);
-}
-
-std::string dblToStr (double d)
-{
-std::stringstream sstr;
-	sstr.unsetf(std::ios_base::floatfield);
-	sstr.unsetf(std::ios_base::fixed);
-	sstr.unsetf(std::ios_base::scientific);
-sstr << d;
-return sstr.str();
-}
+extern unsigned int *textures;//textures array;
+extern int TEXCOUNT;
 
 bool collisionm (muha &p, muha &w) // COLLISION BETWEEN MUHA P AND W
 {
@@ -438,21 +341,13 @@ void myFPS()
 }
 
 
-
-
-
-int LoadTexture (std::string FileName);
-unsigned int* TexturesArrayInit (int count);
-int LoadAlphaTexture (std::string FileName);
-
 int main(int argc, char** argv) 
 { 
-    global_argc = &argc;
-    global_argv = argv;
+    muhaarr = new muha[arrsize + 1];
     for (int i = 0; i < arrsize; i++){ muhaarr[i].x = random()%1025; muhaarr[i].y = random()%769; muhaarr[i].ai = 0;};
     sge::drawInit (argc,argv,GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     sge::sgeWindow mywindow;
-    sge::createWindow (mywindow, "TEST");
+    sge::createWindow (mywindow, "GNU MUHA GAME");
     sge::controlWindow(mywindow, 0, 0, 1024, 768);
     sge::setDrawFunc(MyDrawFunc);
     glutMouseFunc(fOnMouse);
@@ -480,11 +375,11 @@ fin.close();
  g_object_set (sbin, "uri", get_patch("/kill.mp3").c_str(), NULL);//first set
  //g_signal_connect (sbin, "about_to_finish", G_CALLBACK (about_to_finish_han), NULL);//setup callback
  gst_element_set_state (sbin, GST_STATE_READY);//start playing
- sbus = gst_element_get_bus (sbin);/* Wait until error or EOS */ // NOW EOS - IMPOSSIBLE! ONLY ERROR!
- gst_bus_add_signal_watch (sbus);
-  g_signal_connect (G_OBJECT (sbus), "message::error", (GCallback)error_cb, NULL);
-  g_signal_connect (G_OBJECT (sbus), "message::eos", (GCallback)eos_cb, NULL);
-  gst_object_unref (sbus);
+ bus = gst_element_get_bus (sbin);/* Wait until error or EOS */ // NOW EOS - IMPOSSIBLE! ONLY ERROR!
+ gst_bus_add_signal_watch (bus);
+  g_signal_connect (G_OBJECT (bus), "message::error", (GCallback)error_cb, NULL);
+  g_signal_connect (G_OBJECT (bus), "message::eos", (GCallback)eos_cb, NULL);
+  gst_object_unref (bus);
 
 
 
@@ -512,73 +407,4 @@ myFPS();
 
 
 
-unsigned int* TexturesArrayInit (int count)
-{
-unsigned int *arr = new unsigned int [count];
-//glGenTextures(count, arr);
-std::cout <<  " : " << count;
-std::cout << "GENERATED SPACE FOR TEXTURES" <<std::endl;
-return arr;
-}
 
-int LoadTexture (std::string FileName)
-{
-unsigned int txtr;
-glGenTextures(1, &txtr);
-glBindTexture(GL_TEXTURE_2D, txtr);
- 
-// Устанавливаем параметры наложения и фильтрации текстур (для текущего связанного объекта текстуры)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
- 
-// Загрузка и генерация текстуры
-int width, height, nrChannels;
-unsigned char *data = stbi_load(FileName.c_str(), &width, &height, &nrChannels, 0);
-if (data)
-{
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    textures[TEXCOUNT] = txtr;
-    TEXCOUNT++;
-    std::cout << "TEXTURES HAVE BEEN LOADED FROM " << FileName << " TO ID :"<< TEXCOUNT - 1 << std::endl;
-    return TEXCOUNT - 1;
-}
-else
-{
-    std::cout << "Failed to load texture from " << FileName << std::endl;
-    return -1;
-}
-stbi_image_free(data);
-}
-
-int LoadAlphaTexture (std::string FileName)
-{
-unsigned int txtr;
-glGenTextures(1, &txtr);
-glBindTexture(GL_TEXTURE_2D, txtr);
- 
-// Устанавливаем параметры наложения и фильтрации текстур (для текущего связанного объекта текстуры)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
- 
-// Загрузка и генерация текстуры
-int width, height, nrChannels;
-unsigned char *data = stbi_load(FileName.c_str(), &width, &height, &nrChannels, 0);
-if (data)
-{
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    textures[TEXCOUNT] = txtr;
-    TEXCOUNT++;
-    std::cout << "TEXTURES HAVE BEEN LOADED FROM " << FileName << " TO ID :"<< TEXCOUNT - 1 << std::endl;
-    return TEXCOUNT - 1;
-}
-else
-{
-    std::cout << "Failed to load texture from " << FileName << std::endl;
-    return -1;
-}
-stbi_image_free(data);
-}
